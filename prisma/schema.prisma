@@ -1,0 +1,65 @@
+// Define your database provider (e.g., PostgreSQL)
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String // Password will be hashed
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  session       Session[]
+  notifications Notification[]
+
+}
+
+  model Session {
+    id         Int      @id @default(autoincrement())
+    userId     Int
+    prompt Json? 
+    choice     String 
+    date       DateTime 
+
+    user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    tasks Task[] 
+  }
+  
+  
+
+model Task {
+  id             Int       @id @default(autoincrement())
+  title          String
+  description    String? 
+  difficulty     String 
+  timeCommitment Int 
+  domain         String 
+  dueDate        DateTime? 
+  status         Boolean    @default(false) 
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  completionTime DateTime? 
+  reason         String? 
+  feedback       String? 
+
+  sessionId Int
+  session   Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id      Int      @id @default(autoincrement())
+  userId  Int
+  type    String
+  message String
+  isRead  Boolean  @default(false)
+  sentAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
