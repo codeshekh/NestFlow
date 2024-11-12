@@ -31,6 +31,8 @@
 ```bash
 $ npm install
 ```
+## Check the Deployed Version 
+https://genaibackendend.onrender.com/api/v1/docs 
 
 ## Compile and run the project
 
