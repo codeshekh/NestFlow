@@ -1,26 +1,58 @@
 import { Controller, Post, Body, UnauthorizedException } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { CreateUserDto } from "src/users/dtos/create.users.dtos";
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
-import { LoginDto } from "./dto/login.dto";
+import { SendOtpDto } from "./dto/send-otp.dtos";
+import { VerifyOtpDto } from "./dto/verify-otp.dtos";
 
-@ApiTags('auth') 
+@ApiTags('auth')  
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('login')
-@ApiOperation({ summary: 'User login' })
-@ApiBody({ type: LoginDto, description: 'User login credentials' })
-@ApiResponse({ status: 200, description: 'User successfully logged in', schema: { example: { access_token: 'JWT_TOKEN' } } })
-@ApiResponse({ status: 401, description: 'Unauthorized' })
-async login(@Body() loginDto: LoginDto) {
-  const user = await this.authService.validateUser(loginDto.email, loginDto.password);
-
-  if (!user) {
-    throw new UnauthorizedException('Invalid credentials');
+  @ApiOperation({ summary: 'Send OTP to the registered email' }) 
+  @ApiBody({ type: SendOtpDto,
+    examples: {
+      'valid email': {
+        value: { email: 'testuser@example.com' },
+        description: 'A valid email address to which OTP will be sent.',
+      },
+      'invalid email': {
+        value: { email: 'invalidemail' },
+        description: 'An invalid email format.',
+      }
+    }
+   }) 
+  @ApiResponse({ status: 200, description: 'OTP sent successfully.' })  
+  @ApiResponse({ status: 400, description: 'Invalid email format or other errors.' })  
+  @Post('send-otp')
+  async sendOtp(@Body() sendotpdto: SendOtpDto): Promise<void> {
+    const { email } = sendotpdto;
+    await this.authService.sendOtp(email);
   }
 
-  return this.authService.login(user);
-}
+  @ApiOperation({ summary: 'Verify OTP for login' })  
+  @ApiBody({type: VerifyOtpDto,
+    examples: {
+      'valid verification': {
+        value: { email: 'thepandeyop@gmail.com', otp: 'your-otp' },
+        description: 'A valid email and OTP pair for verification.',
+      },
+      'invalid verification': {
+        value: { email: 'invalidemail@example.com', otp: '000000' },
+        description: 'An invalid email and OTP pair.',
+      }
+    }
+  })  
+  @ApiResponse({ status: 200, description: 'JWT token returned after successful verification.', 
+                 schema: { example: { accessToken: 'your-jwt-token' } } })  
+  @ApiResponse({ status: 401, description: 'Invalid OTP or Email.' }) 
+  @Post('verify-otp')
+  async verifyOtp(@Body('email') email: string, @Body('otp') otp: string): Promise<{ accessToken: string }> {
+    const token = await this.authService.verifyOtp(email, otp);
+
+    if (!token) {
+      throw new UnauthorizedException('Invalid Otp or Email');
+    }
+    return { accessToken: token };
+  }
 }

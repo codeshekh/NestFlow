@@ -34,9 +34,9 @@ async function bootstrap() {
   SwaggerModule.setup('api/v1/docs', app, document);
 
   // Start the application and log the URL
-  await app.listen(PORT);
-  console.log(`Server is listening on port: ${PORT}`);
-  console.log(`API documentation is available at: ${await app.getUrl()}/api/v1/docs`); 
+  await app.listen(PORT,'0.0.0.0');
+  console.log(`Server is running at http://localhost:${PORT}`);
+  console.log(`API documentation is available at http://localhost:${PORT}/api/v1/docs`);
 }
 
 bootstrap();
