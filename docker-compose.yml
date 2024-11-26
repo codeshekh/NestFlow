@@ -1,0 +1,14 @@
+version: '3.4'
+
+services:
+  nestflow:
+    image: nestflow
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - 4000:4000
+    env_file:
+      - .env
