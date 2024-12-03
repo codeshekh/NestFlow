@@ -1,4 +1,4 @@
-import { Injectable,UnauthorizedException } from '@nestjs/common';
+import {  Injectable,UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { MailService } from 'src/mail/mail.service';
@@ -38,4 +38,6 @@ async verifyOtp(email: string, otp: string): Promise<string | null>{
 }
 
 
+
 }
+
