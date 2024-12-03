@@ -20,6 +20,7 @@ import { FastapiService } from './fastapi/fastapi.service';
 import { FastapiModule } from './fastapi/fastapi.module';
 import { HttpModule } from '@nestjs/axios';
 import { MailService } from './mail/mail.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -30,6 +31,10 @@ import { MailService } from './mail/mail.service';
     NotificationModule,
     FastapiModule,
     HttpModule, // Make sure HttpModule is imported here
+
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
   ],
   controllers: [
     AppController,
